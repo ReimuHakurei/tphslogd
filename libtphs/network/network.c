@@ -9,6 +9,9 @@
 #include "../common.h"
 #include "network.h"
 
+// This function sends a JSON object (iBuffer) to the device, and
+//     returns a JSON object to oBuffer.
+// On success, it returns the size of oBuffer. On failure, it returns 0.
 size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 	size_t iBytes;
 	size_t oBytes;
@@ -28,7 +31,10 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 	struct sockaddr_in Device;
 
 	Socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (Socket < 0) fatal_socket_error("Failed to open socket.");
+	if (Socket < 0) {
+		fatal_socket_error("Failed to open socket.");
+		return 0;
+	}
 
 	memset((char *) &Device, 0, sizeof(Device));
 	Device.sin_family = AF_INET;
@@ -37,8 +43,15 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 	Device.sin_addr.s_addr = inet_addr("192.168.1.45");
 	Device.sin_port = htons(9999);
 
-	if (connect(Socket,(struct sockaddr *) &Device, sizeof(Device)) < 0) fatal_socket_error("Failed to connect to device.");
-	if (write(Socket, *oBuffer, oBytes) < 0) fatal_socket_error("Failed to write to socket.");
+	if (connect(Socket,(struct sockaddr *) &Device, sizeof(Device)) < 0) {
+		fatal_socket_error("Failed to connect to device.");
+		return 0;
+	}
+
+	if (write(Socket, *oBuffer, oBytes) < 0) {
+		fatal_socket_error("Failed to write to socket.");
+		return 0;
+	}
 
 	// Now that everything has been written, we can free (and re-use) the iBuffer/oBuffers.
 	free(*oBuffer);
@@ -61,7 +74,10 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 	iBytes = read(Socket, (char *) &tcpResponseSize, 4);
 
 	// If the device doesn't send us anything, it's probably a malformed request.
-	if (iBytes != 4) fatal_socket_error("Empty response from device. Malformed request?");
+	if (iBytes != 4) {
+		fatal_socket_error("Empty response from device. Malformed request?");
+		return 0;
+	}
 
 	// Allocate a buffer. We need to put these four bytes back in, so we
 	//     make the buffer large enough for them.
@@ -77,12 +93,13 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 
 	// Read from the socket. If we get a different size response,
 	//     panic and throw an error.
-	iBytes = read(Socket, (char *) &iBuffer[4], tcpResponseSize);
+	iBytes = read(Socket, (char *) &iBuffer[4], ntohl(tcpResponseSize));
 
 	if (iBytes != ntohl(tcpResponseSize)) {
 		char errorBuffer[512];
-		sprintf(errorBuffer, "Incomplete response received.\nExpected: %i bytes\nReceived: %i bytes", tcpResponseSize, iBytes);
+		sprintf(errorBuffer, "Incomplete response received.\nExpected: %u bytes\nReceived: %u bytes", ntohl(tcpResponseSize), iBytes);
 		fatal_socket_error(errorBuffer);
+		return 0;
 	}
 
 	oBytes = nullcbc_decode(iBuffer, *oBuffer, ntohl(tcpResponseSize) + 4);
@@ -104,6 +121,5 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 void fatal_socket_error(char *Error) {
 	// Throw an error and exit upon a socket error.
 
-	printf("\nFATAL ERROR: A fatal network error occurred. Operation cannot continue.\nThe following additional information is availiable:\n%s\n\n", Error);
-	exit(1);
+	printf("\nWARNING: A network error occurred. The operation has been canceled.\nThe following additional information is availiable:\n%s\n\n", Error);
 }
