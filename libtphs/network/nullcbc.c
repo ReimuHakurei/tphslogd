@@ -20,7 +20,7 @@ size_t nullcbc_encode(char *iBuffer, char *oBuffer, size_t iDataSize) {
 
 	bShift = fInit;
 
-	fSize = check_swap_byte_order(fSize);
+	fSize = htonl(fSize);
 
 	*((int *)&oBuffer[0]) = fSize;
 	oBuffer[4] = fInit;
@@ -41,18 +41,22 @@ size_t nullcbc_decode(char *iBuffer, char *oBuffer, size_t iDataSize) {
 	int bShift;
 
 	// fSize is the size of the input buffer; dSize is the size it should be.
-	unsigned int  fSize = iDataSize - 4;
+	unsigned int  fSize = iDataSize - 5;
 	unsigned int  dSize = *((int *)&iBuffer[0]);
 	unsigned char fInit = 0xD0;
 
-	bShift = fInit;
+	dSize = ntohl(dSize);
 
-	dSize = check_swap_byte_order(dSize);
+	if (fSize == (dSize - 1)) {
+		bShift = fInit;
 
-	for (int i = 0; i < iDataSize; i++) {
-		oBuffer[i] = bShift ^ iBuffer[i + 5];
-		bShift = iBuffer[i + 5];
+		for (int i = 0; i < fSize; i++) {
+			oBuffer[i] = bShift ^ iBuffer[i + 5];
+			bShift = iBuffer[i + 5];
+		}
+
+		return fSize;
 	}
 
-	return iDataSize - 5;
+	return 0;
 }

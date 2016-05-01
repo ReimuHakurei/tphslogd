@@ -15,8 +15,5 @@
 // The port that the device runs on.
 #define DEVICE_PORT 9999
 
-// Most machines are Little Endian, but the device needs Big Endian values.
-#define SWAP_UINT32(x) (((x) >> 24) | (((x) & 0x00FF0000) >> 8) | (((x) & 0x0000FF00) << 8) | ((x) << 24))
-
 // Header files for the rest of the library.
 #include "network/network.h"
