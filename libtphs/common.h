@@ -12,9 +12,6 @@
 #include <inttypes.h>
 #include <string.h>
 
-// The maximum size of data to process.
-#define BLOCK_SIZE 65536
-
 // The port that the device runs on.
 #define DEVICE_PORT 9999
 
@@ -22,4 +19,4 @@
 #define SWAP_UINT32(x) (((x) >> 24) | (((x) & 0x00FF0000) >> 8) | (((x) & 0x0000FF00) << 8) | ((x) << 24))
 
 // Header files for the rest of the library.
-#include "network/nullcbc.h"
+#include "network/network.h"

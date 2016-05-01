@@ -1,0 +1,14 @@
+tphslogd
+-------------------------------------------------------------------------------
+
+This is a (work in progress!) library and program for working with the TP-Link
+    HS1xx series of Smart Plugs.
+
+Dependencies can be found in the depends/ directory, and must be installed
+    prior to compiling this software.
+
+To build, just run "make".
+
+-------------------------------------------------------------------------------
+(C) 2016 Alex Ingram <alex@alexingram.net>
+http://reimuhakurei.net | http://stormbit.net
