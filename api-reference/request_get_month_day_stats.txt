@@ -1,0 +1,1 @@
+{"emeter":{"get_monthstat":{"year":2016},"get_daystat":{"month":3,"year":2016}}}

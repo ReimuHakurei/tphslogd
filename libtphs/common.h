@@ -17,4 +17,6 @@
 
 // Header files for the rest of the library.
 #include "network/network.h"
+#include "json/json.h"
+
 #include "../depends/jansson-2.7/src/jansson.h"

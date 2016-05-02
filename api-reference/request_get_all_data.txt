@@ -1,0 +1,1 @@
+{"schedule":{"get_next_action":null,"get_monthstat":{"year":2016},"get_daystat":{"month":4,"year":2016}},"system":{"get_sysinfo":null},"emeter":{"get_realtime":null,"get_monthstat":{"year":2016},"get_daystat":{"month":4,"year":2016}}}
