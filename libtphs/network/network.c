@@ -12,7 +12,7 @@
 // This function sends a JSON object (iBuffer) to the device, and
 //     returns a JSON object to oBuffer.
 // On success, it returns the size of oBuffer. On failure, it returns 0.
-size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
+size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAddress) {
 	size_t iBytes;
 	size_t oBytes;
 
@@ -40,7 +40,7 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer) {
 	Device.sin_family = AF_INET;
 
 	// TODO: Make this read the IP (and optionally, port) from the args.
-	Device.sin_addr.s_addr = inet_addr("192.168.1.45");
+	Device.sin_addr.s_addr = inet_addr(deviceAddress);
 	Device.sin_port = htons(9999);
 
 	if (connect(Socket,(struct sockaddr *) &Device, sizeof(Device)) < 0) {

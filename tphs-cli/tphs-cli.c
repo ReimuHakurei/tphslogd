@@ -9,6 +9,8 @@
 #include "tphs-cli.h"
 
 int main() {
+	// TODO: Make this program take arguments and stuff.
+	
 	//FILE *Input;
 	//FILE *Output;
 
@@ -34,8 +36,10 @@ int main() {
 			char *iBuffer = malloc(iBytes);
 			strcpy(iBuffer,iBufferTxt);
 
+			char *deviceAddress = malloc(sizeof("192.168.1.45") + 1);
+			strcpy(deviceAddress,"192.168.1.45");
 
-			oBytes = json_request(iBytes, iBuffer, &oBuffer);
+			oBytes = json_request(iBytes, iBuffer, &oBuffer, deviceAddress);
 
 			//if (oBuffer != NULL) {
 			//	fwrite(oBuffer, oBytes, 1, Output);

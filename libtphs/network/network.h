@@ -16,4 +16,4 @@
 
 void fatal_socket_error(char *Error);
 
-size_t json_request(size_t iSize, char *iBuffer, char **oBuffer);
+size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAddress);
