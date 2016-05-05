@@ -102,6 +102,8 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAdd
 		return 0;
 	}
 
+	close(Socket);
+
 	oBytes = nullcbc_decode(iBuffer, *oBuffer, ntohl(tcpResponseSize) + 4);
 
 	// This device outputs malformed JSON, missing the opening brace.
