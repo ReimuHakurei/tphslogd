@@ -16,6 +16,9 @@ int decode_json(char * iData, device_response *Device) {
 
 	if (!Response) {
 		printf("JSON Error: Error on line %d: %s\n", Error.line, Error.text);
+
+		printf("DEBUG: %s\n", iData);
+
 		return 1;
 	}
 

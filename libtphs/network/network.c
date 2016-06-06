@@ -39,7 +39,6 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAdd
 	memset((char *) &Device, 0, sizeof(Device));
 	Device.sin_family = AF_INET;
 
-	// TODO: Make this read the IP (and optionally, port) from the args.
 	Device.sin_addr.s_addr = inet_addr(deviceAddress);
 	Device.sin_port = htons(9999);
 
@@ -81,13 +80,17 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAdd
 
 	// Allocate a buffer. We need to put these four bytes back in, so we
 	//     make the buffer large enough for them.
-	iBuffer = (char *) calloc(ntohl(tcpResponseSize) + 5, sizeof(char));
+	if (iBuffer = (char *) calloc(ntohl(tcpResponseSize) + 5, sizeof(char))) {
+		// OK
+	} else {
+		printf("Alloc failed.");
+	}
 
-	// Normally, we would need to malloc one extra char for a null
-	//     terminating character, but in this case, there is still
-	//     one more header byte yet to be received, so we can just
-	//     allocate the size of tcpResponseSize.
-	*oBuffer = (char *) calloc(ntohl(tcpResponseSize), sizeof(char));
+	if (*oBuffer = (char *) calloc(ntohl(tcpResponseSize) + 1, sizeof(char))) {
+		// OK
+	} else {
+		printf("Calloc failed.");
+	}
 
 	memcpy(iBuffer, (char *) &tcpResponseSize, 4);
 
@@ -103,17 +106,8 @@ size_t json_request(size_t iSize, char *iBuffer, char **oBuffer, char *deviceAdd
 	}
 
 	close(Socket);
-
+	
 	oBytes = nullcbc_decode(iBuffer, *oBuffer, ntohl(tcpResponseSize) + 4);
-
-	// This device outputs malformed JSON, missing the opening brace.
-	// We add it in before returning.
-	*oBuffer = realloc(*oBuffer, oBytes + 1);
-
-	if (*oBuffer != NULL) {
-		memmove(*oBuffer + 1, *oBuffer, oBytes);
-		*oBuffer[0] = '{';
-	} else return 0;
 
 	free(iBuffer);
 

@@ -152,15 +152,16 @@ void *device_thread(void *Device) {
 			ResponseBytes = json_request(RequestBytes, RequestString, &ResponseString, Device);
 
 			device_response *Response = calloc(sizeof(device_response), 1);
-			decode_json(ResponseString, Response);
+			if (!decode_json(ResponseString, Response)) {
 
-			char Query[1024];
+				char Query[1024];
 
-			sprintf(Query, "INSERT INTO Dev_%s (volts, amps, watts, kwh) VALUES (%f, %f, %f, %f)", SystemInfo->Device_ID, Response->Volts, Response->Amps, Response->Watts, Response->kWh_To_Date);
+				sprintf(Query, "INSERT INTO Dev_%s (volts, amps, watts, kwh) VALUES (%f, %f, %f, %f)", SystemInfo->Device_ID, Response->Volts, Response->Amps, Response->Watts, Response->kWh_To_Date);
 
-			if (sqlite3_exec(dBase, Query, 0, 0, zErrMsg) != SQLITE_OK) {
-				printf("SQL error: %s\n", zErrMsg);
-				sqlite3_free(zErrMsg);
+				if (sqlite3_exec(dBase, Query, 0, 0, zErrMsg) != SQLITE_OK) {
+					printf("SQL error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
 			}
 
 			free_device_response(Response);

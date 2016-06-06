@@ -36,8 +36,8 @@ int main() {
 			char *iBuffer = malloc(iBytes);
 			strcpy(iBuffer,iBufferTxt);
 
-			char *deviceAddress = malloc(sizeof("192.168.1.45") + 1);
-			strcpy(deviceAddress,"192.168.1.45");
+			char *deviceAddress = malloc(sizeof("192.168.1.69") + 1);
+			strcpy(deviceAddress,"192.168.1.69");
 
 			oBytes = json_request(iBytes, iBuffer, &oBuffer, deviceAddress);
 
